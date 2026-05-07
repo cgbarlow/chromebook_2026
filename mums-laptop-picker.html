@@ -614,19 +614,19 @@
     <!-- Question 2 -->
     <div class="question" data-q="1">
       <span class="question-label">Question Two</span>
-      <h3 class="question-text">How important is a touch screen to you?</h3>
+      <h3 class="question-text">Would you like one that folds into a tablet?</h3>
       <div class="options">
-        <button class="option" data-value="touch-no">
+        <button class="option" data-value="fold-no">
           <span class="option-icon">⌨️</span>
-          <span>Not important — I'm happy with a normal laptop</span>
+          <span>No — a normal laptop is just fine</span>
         </button>
-        <button class="option" data-value="touch-nice">
-          <span class="option-icon">👆</span>
-          <span>A touch screen would be lovely, but not essential</span>
+        <button class="option" data-value="fold-maybe">
+          <span class="option-icon">🤔</span>
+          <span>It'd be nice, but not essential</span>
         </button>
-        <button class="option" data-value="touch-yes">
+        <button class="option" data-value="fold-yes">
           <span class="option-icon">🔄</span>
-          <span>Yes — I'd love one that folds into a tablet too</span>
+          <span>Yes please — I'd love a folding one</span>
         </button>
       </div>
     </div>
@@ -654,19 +654,19 @@
     <!-- Question 4 -->
     <div class="question" data-q="3">
       <span class="question-label">Question Four</span>
-      <h3 class="question-text">What matters most to you?</h3>
+      <h3 class="question-text">When it comes to budget, which sounds most like you?</h3>
       <div class="options">
-        <button class="option" data-value="value">
+        <button class="option" data-value="cheapest">
           <span class="option-icon">💰</span>
-          <span>Best value for money</span>
+          <span>I'd like to spend as little as I need to</span>
         </button>
-        <button class="option" data-value="comfort">
-          <span class="option-icon">🛋️</span>
-          <span>Comfortable to hold and use anywhere</span>
+        <button class="option" data-value="balanced">
+          <span class="option-icon">⚖️</span>
+          <span>Happy to pay a bit more for something nicer</span>
         </button>
-        <button class="option" data-value="newest">
+        <button class="option" data-value="best">
           <span class="option-icon">✨</span>
-          <span>The latest and best screen</span>
+          <span>I want the best screen and quality, money no object</span>
         </button>
       </div>
     </div>
@@ -704,10 +704,10 @@
           <img src="acer-chromebook-plus-514.jpg" alt="Acer Chromebook Plus 514" loading="lazy">
         </div>
         <div class="card-body">
-          <span class="card-tag">~ best value pick ~</span>
+          <span class="card-tag">~ sharpest screen, most storage ~</span>
           <h3>Acer Chromebook Plus 514</h3>
           <p class="card-price"><span class="from">around</span> NZ$908</p>
-          <p class="card-summary">A clever, fast laptop with loads of room for photos and a lovely sharp screen. The best all-rounder for the money.</p>
+          <p class="card-summary">A fast, well-built laptop with a beautifully sharp screen and loads of room for photos. Doesn't fold, but the screen and storage are the best of the three.</p>
           <dl class="card-specs">
             <div><dt>Screen</dt><dd>14" Full HD touch</dd></div>
             <div><dt>Memory</dt><dd>8GB RAM</dd></div>
@@ -734,10 +734,10 @@
           <img src="hp-chromebook-x360-14b.jpg" alt="HP Chromebook x360 14b" loading="lazy">
         </div>
         <div class="card-body">
-          <span class="card-tag">~ in stock now ~</span>
+          <span class="card-tag">~ best value & in stock ~</span>
           <h3>HP Chromebook x360 14b</h3>
           <p class="card-price"><span class="from">around</span> NZ$828</p>
-          <p class="card-summary">A folding 2-in-1 you can buy and start using today. Bends right around so it works as a tablet for cosy sofa sessions.</p>
+          <p class="card-summary">The cheapest of the three and you can buy it today. Bends right around so it works as a tablet for cosy sofa sessions.</p>
           <dl class="card-specs">
             <div><dt>Screen</dt><dd>14" HD touch</dd></div>
             <div><dt>Memory</dt><dd>8GB RAM</dd></div>
@@ -858,29 +858,32 @@
   });
 
   // Recommendation logic
+  // acer = Acer 514 (clamshell, $908, sharpest screen + most storage, no fold)
+  // lenovo (id) = HP x360 14b (cheapest convertible, $828, in stock, weakest screen)
+  // hp = HP x360 14 (2026) (newest convertible, ~$799-899, 2K screen, ships Feb)
   function pickRecommendation() {
     const a = answers;
     let scores = { acer: 0, lenovo: 0, hp: 0 };
 
     // Q1 — usage
-    if (a[0] === 'photos') scores.acer += 3;
-    if (a[0] === 'basic') { scores.acer += 1; scores.lenovo += 1; scores.hp += 1; }
-    if (a[0] === 'versatile') { scores.lenovo += 3; scores.hp += 2; }
+    if (a[0] === 'photos') { scores.acer += 3; scores.hp += 1; }       // big storage matters → Acer
+    if (a[0] === 'basic') { scores.acer += 1; scores.lenovo += 2; scores.hp += 1; } // any of them works, lean cheaper
+    if (a[0] === 'versatile') { scores.lenovo += 2; scores.hp += 3; } // sofa/bed → folding form
 
-    // Q2 — touch
-    if (a[1] === 'touch-no') scores.acer += 2;
-    if (a[1] === 'touch-nice') { scores.acer += 1; scores.lenovo += 1; scores.hp += 1; }
-    if (a[1] === 'touch-yes') { scores.lenovo += 3; scores.hp += 3; }
+    // Q2 — folding tablet (the big differentiator)
+    if (a[1] === 'fold-no') { scores.acer += 4; }                      // Acer is the only non-fold
+    if (a[1] === 'fold-maybe') { scores.acer += 2; scores.lenovo += 1; scores.hp += 1; }
+    if (a[1] === 'fold-yes') { scores.lenovo += 3; scores.hp += 3; }   // Acer doesn't fold, eliminate
 
     // Q3 — timing
-    if (a[2] === 'now') { scores.acer += 2; scores.lenovo += 2; }
-    if (a[2] === 'wait') scores.hp += 3;
-    if (a[2] === 'either') { scores.acer += 1; scores.hp += 1; }
+    if (a[2] === 'now') { scores.acer += 2; scores.lenovo += 2; }      // both in stock
+    if (a[2] === 'wait') { scores.hp += 4; }                            // HP 2026 only, strong signal
+    if (a[2] === 'either') { scores.acer += 1; scores.lenovo += 1; scores.hp += 2; }
 
-    // Q4 — priority
-    if (a[3] === 'value') scores.acer += 3;
-    if (a[3] === 'comfort') scores.lenovo += 3;
-    if (a[3] === 'newest') scores.hp += 3;
+    // Q4 — budget
+    if (a[3] === 'cheapest') { scores.lenovo += 3; }                   // HP 14b is cheapest
+    if (a[3] === 'balanced') { scores.acer += 2; scores.hp += 2; }     // mid-priced quality picks
+    if (a[3] === 'best') { scores.acer += 2; scores.hp += 3; }         // Acer's screen is great, HP 2026 is sharpest
 
     const winner = Object.keys(scores).reduce((a, b) => scores[a] >= scores[b] ? a : b);
     return winner;
@@ -908,15 +911,15 @@
     const messages = {
       acer: {
         title: 'The Acer Chromebook Plus 514',
-        reason: 'Great value, fast, with plenty of storage. A safe and sensible choice you\'ll be happy with for years.'
+        reason: 'A traditional laptop with the sharpest screen and the most storage of the three. Doesn\'t fold, but it\'s fast, well-built, and a joy to use.'
       },
       lenovo: {
         title: 'The HP Chromebook x360 14b',
-        reason: 'Folds into a tablet so you can use it however you like — perfect for the sofa, the kitchen, or the garden. And you can buy it today.'
+        reason: 'Folds into a tablet for the sofa or kitchen, and it\'s the cheapest of the three. You can buy it today.'
       },
       hp: {
         title: 'The HP Chromebook x360 14 (2026)',
-        reason: 'The newest model with a beautiful sharp screen. Worth waiting a few weeks for if you can.'
+        reason: 'The newest model, with a beautifully sharp 2K screen and the folding tablet form. Worth waiting a few weeks for if you can.'
       }
     };
 
